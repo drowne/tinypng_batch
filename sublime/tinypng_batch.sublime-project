@@ -1,0 +1,9 @@
+{
+	"folders":
+	[
+		{
+			"path": "~/projects/tinypng_batch",
+			"folder_exclude_patterns": ["node_modules"]
+		}
+	]
+}

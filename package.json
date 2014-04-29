@@ -1,0 +1,11 @@
+{
+    "name": "tinypng_batch",
+    "version": "0.5.0",
+    "description": "xxx",
+    "main": "tinypng_batch.js",
+    "dependencies": {
+    	"walk": "2"
+    },
+    "author": "Valerio Di Donato",
+    "license": "GPL3"
+}
