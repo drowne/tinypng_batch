@@ -1,16 +1,20 @@
+# requirements
 fs = require("fs")
 path = require("path")
-walk = require("walk");
+walk = require("walk")
 http = require("http")
 https = require("https")
 url = require("url")
 
 # configurables
 apiKey = "INSERT_API_KEY_HERE"
-images_dir = "images/"
+images_dir = "images"
+
+# variables
+size_profit = 0
 
 is_a_png_file = (filename) ->
-	return filename.match(/.png$/)
+	return filename.toLowerCase().match(/.png$/)
 
 magical_compression = (image, cb) ->
 	file = fs.readFileSync(image)
@@ -67,9 +71,9 @@ magical_compression = (image, cb) ->
 					)
 
 					get_res.on("end", () ->
-						fs.writeFileSync(image, img_data, 'binary');
-						compressed_images.push(image);
-						cb and cb();
+						fs.writeFileSync(image, img_data, 'binary')
+						compressed_images.push(image)
+						cb and cb()
 					)
 				)
 		)
@@ -78,7 +82,6 @@ magical_compression = (image, cb) ->
 	req.write(file)
 	req.end()
 
-size_profit = 0
 compressed_images = []
 compressed_images = JSON.parse(fs.readFileSync("./compressed_images.log")) if fs.existsSync("./compressed_images.log")
 
@@ -88,7 +91,7 @@ compress_images = (images) ->
 
 	if not image
 		fs.writeFileSync("compressed_images.log", JSON.stringify(compressed_images), "utf-8")
-		console.log("Ended image compression, effort:", size_profit)
+		console.log("Kb saved with tinypng compression: #{Math.round(size_profit/1000)}")
 		return;
 
 	if compressed_images.indexOf(image) isnt -1
@@ -131,14 +134,19 @@ options = {
 			next()
 
 		file: (root, fileStats, next) ->
-			# console.log "trying to read #{root}#{fileStats.name}"
+
+			pathtofile = if fileStats.name.substring(0, 1) == '/' then fileStats.name.substring(1) else fileStats.name
+			pathtofile = "#{root}/#{pathtofile}"
+
+			console.log "trying to read #{pathtofile}"
+
 			filename = fileStats.name
 			if is_a_png_file(filename)
-				data = fs.readFileSync("#{root}#{filename}")
+				data = fs.readFileSync("#{pathtofile}")
 				if data
 					# images_array.push(data)
-					images_array.push("#{root}#{filename}")
-					console.log "#{filename} added"
+					images_array.push("#{pathtofile}")
+					console.log "#{pathtofile} added"
 				else
 					console.log "error"
 
